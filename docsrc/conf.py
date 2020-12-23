@@ -102,7 +102,7 @@ html_favicon = "_static/images/pysal_favicon.ico"
 #
 html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
-    "navbar_title": "spopt",  # string of your project name, for example, 'giddy'
+    "navbar_title": "spopt",  # string of your project name, for example, 'spopt'
     # Render the next and previous page links in navbar. (Default: true)
     "navbar_sidebarrel": False,
     # Render the current pages TOC in the navbar. (Default: true)
@@ -257,3 +257,47 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
 }
 
+
+# This is processed by Jinja2 and inserted before each notebook
+nbsphinx_prolog = r"""
+{% set docname = env.doc2path(env.docname, base=None).replace("nblink","ipynb") %}
+{% set fullpath = env.doc2path(env.docname, base='tree/master/notebooks/').replace("nblink","ipynb") %}
+
+.. only:: html
+
+    .. role:: raw-html(raw)
+        :format: html
+
+    .. nbinfo::
+
+        This page was generated from `{{ docname }}`__.
+        Interactive online version:
+        :raw-html:`<a href="https://mybinder.org/v2/gh/pysal/spopt/master?filepath={{ docname }}"><img alt="Binder badge" src="https://mybinder.org/badge_logo.svg" style="vertical-align:text-bottom"></a>`
+
+    __ https://github.com/pysal/spopt/{{ fullpath }}
+
+.. raw:: latex
+
+    \nbsphinxstartnotebook{\scriptsize\noindent\strut
+    \textcolor{gray}{The following section was generated from
+    \sphinxcode{\sphinxupquote{\strut {{ docname | escape_latex }}}} \dotfill}}
+"""
+
+# This is processed by Jinja2 and inserted after each notebook
+nbsphinx_epilog = r"""
+.. raw:: latex
+
+    \nbsphinxstopnotebook{\scriptsize\noindent\strut
+    \textcolor{gray}{\dotfill\ \sphinxcode{\sphinxupquote{\strut
+    {{ env.doc2path(env.docname, base='doc') | escape_latex }}}} ends here.}}
+"""
+
+# List of arguments to be passed to the kernel that executes the notebooks:
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+    "--InlineBackend.rc={'figure.dpi': 96}",
+]
+
+mathjax_config = {
+    'TeX': {'equationNumbers': {'autoNumber': 'AMS', 'useLabelIds': True}},
+}
